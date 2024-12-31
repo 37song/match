@@ -217,7 +217,7 @@ st.markdown("---")
 
 if "홈_최근5" in selected_stats:
     if not home_recent_df.empty:
-        st.markdown(f"{home_team} 최근 홈 5경기")
+        st.markdown(f"{home_team} : 최근 홈 5경기")
         
         # 두 번째 열(1번째 인덱스)에 빨간색 스타일 적용
         styled_df = home_recent_df.style.set_table_styles(
@@ -234,7 +234,7 @@ if "홈_최근5" in selected_stats:
 st.markdown("&nbsp;", unsafe_allow_html=True)
 if "원정_최근5" in selected_stats:
     if not away_recent_df.empty:
-        st.markdown(f"{away_team} 최근 원정 5경기")
+        st.markdown(f"{away_team} : 최근 원정 5경기")
         
         # 두 번째 열(1번째 인덱스)에 빨간색 스타일 적용
         styled_df = away_recent_df.style.set_table_styles(
