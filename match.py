@@ -198,8 +198,6 @@ if selected_sport:
 
 
 
-
-
 # 통계 선택
 stats = ["최근상대전적", "홈_최근5", "원정_최근5", "홈팀 골득실", "원정팀 골득실"]
 selected_stats = st.sidebar.multiselect("통계 및 분석 선택", stats, default=stats)
@@ -235,7 +233,6 @@ if "최근상대전적" in selected_stats:
         
         # HTML 스타일로 테이블 렌더링
         st.markdown(styled_df.to_html(), unsafe_allow_html=True)
-
 
 # 줄 긋기
 st.markdown("---")
@@ -274,14 +271,12 @@ if "홈_최근5" in selected_stats:
             unsafe_allow_html=True
         )
 
-        
 # 한줄 띄기
 st.markdown("&nbsp;", unsafe_allow_html=True)
 
-
 if "원정_최근5" in selected_stats:
     if not away_recent_df.empty:
-        st.markdown(f"{away_team} : 최근 홈 5경기")
+        st.markdown(f"{away_team} : 최근 원정 5경기")
         
         # 두 번째 열(1번째 인덱스)에 빨간색 스타일 적용
         def highlight_larger(row):
@@ -313,97 +308,125 @@ if "원정_최근5" in selected_stats:
             unsafe_allow_html=True
         )
 
+# 줄 긋기
+st.markdown("---")
 
-if "홈팀 골득실" in selected_stats:
-    # 그래프 생성
-    fig = go.Figure()
 
-    # 홈 득점 데이터 추가
-    fig.add_trace(go.Scatter(
-        x=list(range(1, len(home_gf) + 1)),  # x축: 최근 경기 순서 (1, 2, 3, ...)
-        y=home_gf, 
-        mode='lines+markers',
-        name='득점',
-        line=dict(width=2),
-        marker=dict(size=8)
-    ))
 
-    # 홈 실점 데이터 추가
-    fig.add_trace(go.Scatter(
-        x=list(range(1, len(home_ga) + 1)), 
-        y=home_ga, 
-        mode='lines+markers',
-        name='실점',
-        line=dict(width=2, dash='dash'),  # 실점은 점선으로 표시
-        marker=dict(size=8)
-    ))
+# 홈팀 : 최근 5경기 골득실
+# 골득실 차이 계산
+goal_diff = [gf - ga for gf, ga in zip(home_gf, home_ga)]
+# 골득실 차이에 따른 결과 생성
+goal_diff_labels = ['승' if diff > 0 else '무' if diff == 0 else '패' for diff in goal_diff]
 
-    # 레이아웃 설정
-    fig.update_layout(
-        title= f'{home_team} : 최근 5경기 골득실',
-        xaxis=dict(
-            title= '최근 5경기',
-            tickmode= 'linear',  # 눈금 간격을 수동으로 설정
-            dtick= 1,           # x축 눈금 간격 1
-            range= [1, len(home_gf)]  # x축 범위 설정
-        ),
-        yaxis=dict(
-            title='Goals',
-            tickmode='linear',  # 눈금 간격을 수동으로 설정
-            dtick=1,           # y축 눈금 간격 1
-            range=[0, max(max(home_gf), max(home_ga)) + 1]  # y축 범위 설정
-        ),
-        height=300,
-        legend_title='',
-        template='plotly_white'
-    )
 
-    # Streamlit에 표시
-    st.plotly_chart(fig, use_container_width=True)
+# 그래프 생성
+fig = go.Figure()
+# 홈 득점 데이터 추가
+fig.add_trace(go.Scatter(
+    x=list(range(1, len(home_gf) + 1)),  # x축: 최근 경기 순서 (1, 2, 3, ...)
+    y=home_gf, 
+    mode='lines+markers',
+    name='득점',
+    line=dict(width=2),
+    marker=dict(size=8)
+))
+# 홈 실점 데이터 추가
+fig.add_trace(go.Scatter(
+    x=list(range(1, len(home_ga) + 1)), 
+    y=home_ga, 
+    mode='lines+markers',
+    name='실점',
+    line=dict(width=2, dash='dash'),  # 실점은 점선으로 표시
+    marker=dict(size=8)
+))
 
-if "원정팀 골득실" in selected_stats:
-    # 그래프 생성
-    fig = go.Figure()
+# 레이아웃 설정
+fig.update_layout(
+    title=f'{home_team} : 최근 5경기 골득실',
+    xaxis=dict(
+        tickmode='array',               # 눈금 값을 사용자 정의
+        tickvals=list(range(1, len(goal_diff) + 1)),  # x축 눈금 위치
+        ticktext=goal_diff_labels,      # 각 눈금에 표시할 텍스트
+        range=[1, len(home_gf)]         # x축 범위 설정
+    ),
+    yaxis=dict(
+        title='Goals',
+        tickmode='linear',              # 눈금 간격을 수동으로 설정
+        dtick=1,                        # y축 눈금 간격 1
+        range=[0, max(max(home_gf), max(home_ga)) + 1]  # y축 범위 설정
+    ),
+    height=300,
+    legend=dict(
+        title='',                       # 범례 제목
+        orientation='h',                # 수평(horizontal) 방향
+        x=0.5,                          # x축 중앙 정렬
+        xanchor='center',               # x축 기준점
+        y=1.1,                          # 그래프 위쪽에 위치
+        yanchor='bottom'                # y축 기준점
+    ),
+    template='plotly_white'
+)
+# Streamlit에 표시
+st.plotly_chart(fig, use_container_width=True)
 
-    # 홈 득점 데이터 추가
-    fig.add_trace(go.Scatter(
-        x=list(range(1, len(away_gf) + 1)),  # x축: 최근 경기 순서 (1, 2, 3, ...)
-        y=away_gf, 
-        mode='lines+markers',
-        name='득점',
-        line=dict(width=2),
-        marker=dict(size=8)
-    ))
 
-    # 홈 실점 데이터 추가
-    fig.add_trace(go.Scatter(
-        x=list(range(1, len(away_ga) + 1)), 
-        y=away_ga, 
-        mode='lines+markers',
-        name='실점',
-        line=dict(width=2, dash='dash'),  # 실점은 점선으로 표시
-        marker=dict(size=8)
-    ))
 
-    # 레이아웃 설정
-    fig.update_layout(
-        title= f'{away_team} : 최근 5경기 골득실',
-        xaxis=dict(
-            title= '최근 5경기',
-            tickmode= 'linear',  # 눈금 간격을 수동으로 설정
-            dtick= 1,           # x축 눈금 간격 1
-            range= [1, len(away_gf)]  # x축 범위 설정
-        ),
-        yaxis=dict(
-            title='Goals',
-            tickmode='linear',  # 눈금 간격을 수동으로 설정
-            dtick=1,           # y축 눈금 간격 1
-            range=[0, max(max(away_gf), max(away_ga)) + 1]  # y축 범위 설정
-        ),
-        height=300,
-        legend_title='',
-        template='plotly_white'
-    )
 
-    # Streamlit에 표시
-    st.plotly_chart(fig, use_container_width=True)
+
+# 원정팀 : 최근 5경기 골득실
+# 골득실 차이 계산
+goal_diff = [gf - ga for gf, ga in zip(away_gf, away_ga)]
+# 골득실 차이에 따른 결과 생성
+goal_diff_labels = ['승' if diff > 0 else '무' if diff == 0 else '패' for diff in goal_diff]
+
+
+# 그래프 생성
+fig = go.Figure()
+# 원정 득점 데이터 추가
+fig.add_trace(go.Scatter(
+    x=list(range(1, len(away_gf) + 1)),  # x축: 최근 경기 순서 (1, 2, 3, ...)
+    y=away_gf, 
+    mode='lines+markers',
+    name='득점',
+    line=dict(width=2),
+    marker=dict(size=8)
+))
+# 원정 실점 데이터 추가
+fig.add_trace(go.Scatter(
+    x=list(range(1, len(away_ga) + 1)), 
+    y=away_ga, 
+    mode='lines+markers',
+    name='실점',
+    line=dict(width=2, dash='dash'),  # 실점은 점선으로 표시
+    marker=dict(size=8)
+))
+
+# 레이아웃 설정
+fig.update_layout(
+    title=f'{away_team} : 최근 5경기 골득실',
+    xaxis=dict(
+        tickmode='array',               # 눈금 값을 사용자 정의
+        tickvals=list(range(1, len(goal_diff) + 1)),  # x축 눈금 위치
+        ticktext=goal_diff_labels,      # 각 눈금에 표시할 텍스트
+        range=[1, len(away_gf)]         # x축 범위 설정
+    ),
+    yaxis=dict(
+        title='Goals',
+        tickmode='linear',              # 눈금 간격을 수동으로 설정
+        dtick=1,                        # y축 눈금 간격 1
+        range=[0, max(max(away_gf), max(away_ga)) + 1]  # y축 범위 설정
+    ),
+    height=300,
+    legend=dict(
+        title='',                       # 범례 제목
+        orientation='h',                # 수평(horizontal) 방향
+        x=0.5,                          # x축 중앙 정렬
+        xanchor='center',               # x축 기준점
+        y=1.1,                          # 그래프 위쪽에 위치
+        yanchor='bottom'                # y축 기준점
+    ),
+    template='plotly_white'
+)
+# Streamlit에 표시
+st.plotly_chart(fig, use_container_width=True)
