@@ -363,7 +363,7 @@ fig.update_layout(
         x=0.5,                          # x축 중앙 정렬
         xanchor='center',               # x축 기준점
         y=1.1,                          # 그래프 위쪽에 위치
-        yanchor='bottom'                # y축 기준점
+        yanchor='bottom',                # y축 기준점
         bgcolor='rgba(0,0,0,0)'         # 투명한 배경색 설정
     ),
     template='plotly_white'
@@ -425,7 +425,7 @@ fig.update_layout(
         x=0.5,                          # x축 중앙 정렬
         xanchor='center',               # x축 기준점
         y=1.1,                          # 그래프 위쪽에 위치
-        yanchor='bottom'                # y축 기준점
+        yanchor='bottom',                # y축 기준점
         bgcolor='rgba(0,0,0,0)'         # 투명한 배경색 설정
     ),
     template='plotly_white'
