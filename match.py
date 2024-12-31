@@ -216,11 +216,11 @@ if "최근상대전적" in selected_stats:
             styles = ['' for _ in range(len(row))]  # 기본 스타일은 빈 문자열
             
             if col3 > col5:
-                styles[1] = 'color: purple; font-weight: bold;'  # 2번째 열을 강조
-                styles[2] = 'color: purple; font-weight: bold;'  # 3번째 열을 강조
+                styles[1] = 'color: blue; font-weight: bold;'  # 2번째 열을 강조
+                styles[2] = 'color: blue; font-weight: bold;'  # 3번째 열을 강조
             elif col5 > col3:
-                styles[4] = 'color: purple; font-weight: bold;'  # 5번째 열을 강조
-                styles[5] = 'color: purple; font-weight: bold;'  # 6번째 열을 강조
+                styles[4] = 'color: blue; font-weight: bold;'  # 5번째 열을 강조
+                styles[5] = 'color: blue; font-weight: bold;'  # 6번째 열을 강조
             elif col3 == col5:
                 styles[3] = 'color: lime; font-weight: bold;'  # 4번째 열을 강조
             
@@ -248,9 +248,9 @@ if "홈_최근5" in selected_stats:
             styles = ['' for _ in range(len(row))]  # 기본 스타일은 빈 문자열
             
             if col3 > col5:
-                styles[2] = 'color: purple; font-weight: bold;'  # 3번째 열을 강조
+                styles[2] = 'color: blue; font-weight: bold;'  # 3번째 열을 강조
             elif col5 > col3:
-                styles[4] = 'color: purple; font-weight: bold;'  # 5번째 열을 강조
+                styles[4] = 'color: blue; font-weight: bold;'  # 5번째 열을 강조
             elif col3 == col5:
                 styles[3] = 'color: lime; font-weight: bold;'  # 4번째 열을 강조
             
@@ -285,9 +285,9 @@ if "원정_최근5" in selected_stats:
             styles = ['' for _ in range(len(row))]  # 기본 스타일은 빈 문자열
             
             if col3 > col5:
-                styles[2] = 'color: purple; font-weight: bold;'  # 3번째 열을 강조
+                styles[2] = 'color: blue; font-weight: bold;'  # 3번째 열을 강조
             elif col5 > col3:
-                styles[4] = 'color: purple; font-weight: bold;'  # 5번째 열을 강조
+                styles[4] = 'color: blue; font-weight: bold;'  # 5번째 열을 강조
             elif col3 == col5:
                 styles[3] = 'color: lime; font-weight: bold;'  # 4번째 열을 강조
             
