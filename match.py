@@ -215,8 +215,8 @@ if "최근상대전적" in selected_stats:
             elif col5 > col3:
                 styles[4] = 'color: yellow; font-weight: bold;'  # 5번째 열을 강조
             elif col3 == col5:
-                styles[2] = 'color: green; font-weight: bold;'  # 3번째 열을 강조
-                styles[4] = 'color: green; font-weight: bold;'  # 5번째 열을 강조
+                styles[2] = 'color: lime; font-weight: bold;'  # 3번째 열을 강조
+                styles[4] = 'color: lime; font-weight: bold;'  # 5번째 열을 강조
             
             return styles
         
