@@ -92,22 +92,29 @@ if selected_sport:
 
     # Google Sheets 데이터 필터링
     filtered_data = data[(data['홈'] == home_team) & (data['원정'] == away_team)]
+
+    # 홈 원정 안 가리고 필터링
+    condition1 = (data['홈'] == home_team) & (data['원정'] == away_team)
+    condition2 = (data['홈'] == away_team) & (data['원정'] == home_team)
+    recent_data = data[condition1 | condition2]
+
     # 최근 5개 데이터 추출
     recent_filtered_data = filtered_data.tail(5)
+    last5_data = recent_data.tail(5)
 
-    if not recent_filtered_data.empty:
-        recent_result = []
-        for _, row in recent_filtered_data.iterrows():
+    if not last5_data.empty:
+        last5_result = []
+        for _, row in last5_data.iterrows():
             date = row['경기일정']
             home = row['홈']
             away = row['원정']
             home_goal = row['홈득']
             away_goal = row['원정득']
             vs = 'vs'
-            recent_result.append([date, home, home_goal, vs, away_goal, away])
+            last5_result.append([date, home, home_goal, vs, away_goal, away])
 
         # DataFrame 생성
-        recent_df = pd.DataFrame(recent_result, columns=['일시', '홈', 'H-Goal', '', 'A-Goal', '원정'])
+        last5_df = pd.DataFrame(last5_result, columns=['일시', '홈', 'H-Goal', '', 'A-Goal', '원정'])
 
 
     
@@ -201,7 +208,7 @@ selected_stats = st.sidebar.multiselect("통계 및 분석 선택", stats, defau
 st.markdown("&nbsp;", unsafe_allow_html=True)
 
 if "최근상대전적" in selected_stats:
-    if not filtered_data.empty:
+    if not recent_data.empty:
         st.markdown("최근 상대 전적")
         
         # 3번째 열과 5번째 열 중 큰 숫자를 노란색 글씨로 표시
@@ -217,18 +224,18 @@ if "최근상대전적" in selected_stats:
                 styles[4] = 'color: yellow; font-weight: bold;'  # 5번째 열을 강조
                 styles[5] = 'color: yellow; font-weight: bold;'  # 6번째 열을 강조
             elif col3 == col5:
-                styles[2] = 'color: lime; font-weight: bold;'  # 3번째 열을 강조
-                styles[4] = 'color: lime; font-weight: bold;'  # 5번째 열을 강조
+                styles[3] = 'color: lime; font-weight: bold;'  # 4번째 열을 강조
             
             return styles
         
-        styled_df = recent_df.style.apply(highlight_larger, axis=1).set_table_styles(
+        styled_df = last5_df.style.apply(highlight_larger, axis=1).set_table_styles(
             [{'selector': 'th', 'props': [('text-align', 'center')]},
              {'selector': 'td', 'props': [('text-align', 'center')]}]
         )
         
         # HTML 스타일로 테이블 렌더링
         st.markdown(styled_df.to_html(), unsafe_allow_html=True)
+
 
 # 줄 긋기
 st.markdown("---")
@@ -238,33 +245,74 @@ if "홈_최근5" in selected_stats:
         st.markdown(f"{home_team} : 최근 홈 5경기")
         
         # 두 번째 열(1번째 인덱스)에 빨간색 스타일 적용
+        def highlight_larger(row):
+            # 3번째 열과 5번째 열의 값을 가져옵니다.
+            col3, col5 = row.iloc[2], row.iloc[4]
+            styles = ['' for _ in range(len(row))]  # 기본 스타일은 빈 문자열
+            
+            if col3 > col5:
+                styles[2] = 'color: yellow; font-weight: bold;'  # 3번째 열을 강조
+            elif col5 > col3:
+                styles[4] = 'color: yellow; font-weight: bold;'  # 5번째 열을 강조
+            elif col3 == col5:
+                styles[3] = 'color: lime; font-weight: bold;'  # 4번째 열을 강조
+            
+            return styles
+
         styled_df = home_recent_df.style.set_table_styles(
             [{'selector': 'th', 'props': [('text-align', 'center')]},
              {'selector': 'td', 'props': [('text-align', 'center')]}]
-        ).applymap(lambda x: 'color: red;', subset=pd.IndexSlice[:, home_recent_df.columns[1]])
+        ).applymap(
+            lambda x: 'color: red; font-weight: bold;', subset=pd.IndexSlice[:, home_recent_df.columns[1]]
+        ).apply(
+            highlight_larger, axis=1
+        )
 
         # HTML 스타일로 테이블 렌더링
         st.markdown(
             styled_df.to_html(),
             unsafe_allow_html=True
         )
+
+        
 # 한줄 띄기
 st.markdown("&nbsp;", unsafe_allow_html=True)
+
+
 if "원정_최근5" in selected_stats:
     if not away_recent_df.empty:
-        st.markdown(f"{away_team} : 최근 원정 5경기")
+        st.markdown(f"{away_team} : 최근 홈 5경기")
         
         # 두 번째 열(1번째 인덱스)에 빨간색 스타일 적용
+        def highlight_larger(row):
+            # 3번째 열과 5번째 열의 값을 가져옵니다.
+            col3, col5 = row.iloc[2], row.iloc[4]
+            styles = ['' for _ in range(len(row))]  # 기본 스타일은 빈 문자열
+            
+            if col3 > col5:
+                styles[2] = 'color: yellow; font-weight: bold;'  # 3번째 열을 강조
+            elif col5 > col3:
+                styles[4] = 'color: yellow; font-weight: bold;'  # 5번째 열을 강조
+            elif col3 == col5:
+                styles[3] = 'color: lime; font-weight: bold;'  # 4번째 열을 강조
+            
+            return styles
+
         styled_df = away_recent_df.style.set_table_styles(
             [{'selector': 'th', 'props': [('text-align', 'center')]},
              {'selector': 'td', 'props': [('text-align', 'center')]}]
-        ).applymap(lambda x: 'color: blue;', subset=pd.IndexSlice[:, home_recent_df.columns[5]])
+        ).applymap(
+            lambda x: 'color: cyan; font-weight: bold;', subset=pd.IndexSlice[:, away_recent_df.columns[5]]
+        ).apply(
+            highlight_larger, axis=1
+        )
 
         # HTML 스타일로 테이블 렌더링
         st.markdown(
             styled_df.to_html(),
             unsafe_allow_html=True
         )
+
 
 if "홈팀 골득실" in selected_stats:
     # 그래프 생성
