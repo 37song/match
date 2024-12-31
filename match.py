@@ -202,15 +202,28 @@ st.markdown("&nbsp;", unsafe_allow_html=True)
 
 if "최근상대전적" in selected_stats:
     if not filtered_data.empty:
-        st.markdown("최근 상대 전적") 
-        # HTML 스타일로 테이블 렌더링
-        st.markdown(
-            recent_df.style.set_table_styles(
-                [{'selector': 'th', 'props': [('text-align', 'center')]},
-                 {'selector': 'td', 'props': [('text-align', 'center')]}]
-            ).to_html(),
-            unsafe_allow_html=True
+        st.markdown("최근 상대 전적")
+        
+        # 3번째 열과 5번째 열 중 큰 숫자를 노란색 글씨로 표시
+        def highlight_larger(row):
+            # 3번째 열과 5번째 열의 값을 가져옵니다.
+            col3, col5 = row.iloc[2], row.iloc[4]
+            styles = ['' for _ in range(len(row))]  # 기본 스타일은 빈 문자열
+            
+            if col3 > col5:
+                styles[2] = 'color: yellow; font-weight: bold;'  # 3번째 열을 강조
+            elif col5 > col3:
+                styles[4] = 'color: yellow; font-weight: bold;'  # 5번째 열을 강조
+            
+            return styles
+        
+        styled_df = recent_df.style.apply(highlight_larger, axis=1).set_table_styles(
+            [{'selector': 'th', 'props': [('text-align', 'center')]},
+             {'selector': 'td', 'props': [('text-align', 'center')]}]
         )
+        
+        # HTML 스타일로 테이블 렌더링
+        st.markdown(styled_df.to_html(), unsafe_allow_html=True)
 
 # 줄 긋기
 st.markdown("---")
