@@ -7,10 +7,6 @@ import gspread
 # Page configuration
 st.set_page_config(page_title="BetterJin309", page_icon="⚽", layout="wide")
 
-# Google Sheets 인증 및 데이터 가져오기
-spreadsheet_url = "https://docs.google.com/spreadsheets/d/1uOwA06f9ydm6vbk5dNBX6iiIOjjwNawbdjPBf2dtE98/export?format=csv&gid=680543158"
-data = pd.read_csv(spreadsheet_url, header=0)
-
 # Header
 st.title("경기 분석")
 
@@ -20,6 +16,17 @@ st.sidebar.header("경기 구성")
 # 사이드바 : 종목 선택
 sports = ['축구', '농구', '야구']
 selected_sport = st.sidebar.selectbox('스포츠 선택', sports)
+
+if selected_sport == '축구' :
+    spreadsheet_url = "https://docs.google.com/spreadsheets/d/1uOwA06f9ydm6vbk5dNBX6iiIOjjwNawbdjPBf2dtE98/export?format=csv&gid=680543158"
+elif selected_sport == '농구' :
+    spreadsheet_url = "https://docs.google.com/spreadsheets/d/1UD5N612jGDcsqBmqAt_N67vOArrTv1i-v8tYQVbq5Dc/export?format=csv&gid=680543158"
+elif selected_sport == '배구' :
+    pass
+elif selected_sport == '야구' :
+    pass
+data = pd.read_csv(spreadsheet_url, header=0)
+
 
 # 종목 > 리그 목록
 league = {
@@ -41,7 +48,7 @@ teams_by_league = {
     '에레디비시에' : ['F시타르','PSV','고어헤드','네이메헌','발베이크','브레다','빌럼II','스파로테','아약스','알메러C','알크마르','위트레흐','즈볼러','트벤테','페예노르','헤라클레','헤이렌베','흐로닝언'],
 
     'NBA' : ['LA 레이커스','LA 클리퍼스','골든스테이트','뉴올리언즈','뉴욕','댈러스','덴버','디트로이트','마이애미','멤피스','미네소타','밀워키','보스턴','브루클린','새크라맨토','샌안토니오','샬럿','시카고','애틀랜타','오클라호마','올랜도','워싱턴','유타','인디애나','클리블랜드','토론토','포틀랜드','피닉스','필라델피아','휴스턴'],
-    'KBL' : ['KT 소닉붐','고양 캐롯','부산 KCC','서울 SK','서울 삼성','안양 KGC','울산 현대모비스','원주 DB','창원 LG','한국 가스'],
+    'KBL' : ['KT소닉붐','고양소노','부산KCC','서울SK','서울삼성','안양정관','울산모비','원주DB','창원LG','한국가스'],
     'W-KBL' : ['BNK썸','KB스타즈','삼성생명','신한은행','우리은행','하나은행'],
 
     'MLB' : ['LA 다저스','LA 에인절스','뉴욕 메츠','뉴욕 양키스','디트로이트','마이애미','미네소타','밀워키','보스턴','볼티모어','샌디에고','샌프란시스코','세인트루이스','시애틀','시카고 컵스','시카고 화이트삭스','신시네티','애리조나','애틀랜타','오클랜드','워싱턴','캔자스시티','콜로라도','클리블랜드','텍사스','템파베이','토론토','피츠버그','필라델피아','휴스턴'],
@@ -353,8 +360,8 @@ fig.update_layout(
     yaxis=dict(
         title='Goals',
         tickmode='linear',              # 눈금 간격을 수동으로 설정
-        dtick=1,                        # y축 눈금 간격 1
-        range=[0, max(max(home_gf), max(home_ga)) + 1]  # y축 범위 설정
+        dtick= 5 if min(min(home_gf), min(home_ga))> 30 else 1 ,   # y축 눈금 간격 1
+        range=[min(min(home_gf), min(home_ga)) - 10 , max(max(home_gf), max(home_ga)) + 5] if min(min(home_gf), min(home_ga))> 30 else [0 , max(max(home_gf), max(home_ga)) + 1]  # y축 범위 설정
     ),
     height=300,
     legend=dict(
@@ -415,8 +422,8 @@ fig.update_layout(
     yaxis=dict(
         title='Goals',
         tickmode='linear',              # 눈금 간격을 수동으로 설정
-        dtick=1,                        # y축 눈금 간격 1
-        range=[0, max(max(away_gf), max(away_ga)) + 1]  # y축 범위 설정
+        dtick= 5 if min(min(home_gf), min(home_ga))> 30 else 1 ,   # y축 눈금 간격 1
+        range=[min(min(home_gf), min(home_ga)) -10 , max(max(home_gf), max(home_ga)) + 5] if min(min(home_gf), min(home_ga))> 30 else [0 , max(max(home_gf), max(home_ga)) + 1]  # y축 범위 설정
     ),
     height=300,
     legend=dict(
